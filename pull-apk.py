@@ -9,7 +9,7 @@ import subprocess
 # 创建解析器
 parser = argparse.ArgumentParser(description='Pull APK from device.')
 parser.add_argument('pkg_name', help='The package name of the APK to pull')
-parser.add_argument('-out', help='The output directory to pull APK to', default='~/Desktop')
+parser.add_argument('-o','--out', help='The output directory to pull APK to', default='~/Desktop')
 
 # 解析参数
 args = parser.parse_args()
