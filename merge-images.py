@@ -5,8 +5,17 @@ import argparse
 from PIL import Image
 
 def merge_images(input_dir, output_dir, merge_mode):
+    # 检查输入目录是否存在
+    if not os.path.exists(input_dir):
+        raise Exception(f"Input directory {input_dir} does not exist.")
+
     # 获取输入目录下的所有图片文件
     files = [os.path.join(input_dir, f) for f in os.listdir(input_dir) if f.endswith('.png') or f.endswith('.jpg') or f.endswith('.jpeg')]
+    
+    # 检查是否有图片文件
+    if not files:
+        raise Exception(f"No image files found in the directory {input_dir}")
+
     files.sort()  # 确保图片按照名称排序
 
     # 读取所有图片文件
@@ -53,5 +62,7 @@ if __name__ == "__main__":
     output_dir = args.out if args.out else input_dir
     merge_mode = 'h' if args.horizontal else 'v' if args.vertical else 'h'
 
-    merge_images(input_dir, output_dir, merge_mode)
-    
+    try:
+        merge_images(input_dir, output_dir, merge_mode)
+    except Exception as e:
+        print(e)
