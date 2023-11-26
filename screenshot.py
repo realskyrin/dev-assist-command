@@ -39,11 +39,13 @@ class TermLoading():
             self.__threadEvent.wait()
             self.__threadEvent.clear()
 
-def capture_screenshot(filename_prefix=None, scale=1.0, copy_to_clipboard=False):
+def capture_screenshot(filename_prefix=None, scale=1.0, copy_to_clipboard=False, output_dir="~/Desktop"):
     # 构建文件名
     timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
     filename = f"{filename_prefix}-{timestamp}.png" if filename_prefix else f"{timestamp}.png"
-    filepath = os.path.expanduser(f"~/Desktop/{filename}")
+    output_dir = os.path.expanduser(output_dir)
+    os.makedirs(output_dir, exist_ok=True)
+    filepath = os.path.join(output_dir, filename)
 
     # 执行 adb 命令并捕获输出
     process = subprocess.Popen("adb exec-out screencap -p", shell=True, stdout=subprocess.PIPE)
@@ -84,6 +86,7 @@ if __name__ == "__main__":
     parser.add_argument('-n', '--name', type=str, metavar='prefix', help='the prefix of the filename')
     parser.add_argument('-s', '--scale', type=float, metavar='scale_factor', help='scale of the screenshot', default=1.0)
     parser.add_argument('-c', '--copy', action='store_true', help='copy the screenshot to clipboard', default=False)
+    parser.add_argument('-o', '--out', type=str, metavar='output_dir', help='the output directory of the screenshot', default="~/Desktop")
 
     # 解析参数
     args = parser.parse_args()
@@ -92,5 +95,7 @@ if __name__ == "__main__":
     filename_prefix = args.name
     scale = args.scale
     copy_to_clipboard = args.copy
+    output_dir = args.out
 
-    capture_screenshot(filename_prefix, scale, copy_to_clipboard)
+    capture_screenshot(filename_prefix, scale, copy_to_clipboard, output_dir)
+    
