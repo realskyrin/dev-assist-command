@@ -3,6 +3,33 @@
 import os
 import argparse
 from PIL import Image
+import time
+from threading import Thread, Event
+
+class TermLoading():
+    def __init__(self):
+        self.__threadEvent = Event()
+        self.__thread = Thread(target=self.__loading, daemon=True)
+
+    def show_loading(self):
+        self.__threadEvent.clear()
+        if not self.__thread.is_alive():
+            self.__thread.start()
+
+    def stop_loading(self):
+        self.__threadEvent.set()
+
+    def __loading(self):
+        emojis = ["🌕", "🌖", "🌗", "🌘", "🌑", "🌒", "🌓", "🌔"]
+        i = 0
+        while True:
+            while not self.__threadEvent.is_set():
+                i = (i + 1) % len(emojis)
+                print('\r' + emojis[i], end='', flush=True)
+                time.sleep(0.1)
+            print('\r', end='', flush=True)  # clear the line
+            self.__threadEvent.wait()
+            self.__threadEvent.clear()
 
 def merge_images(input_dir, output_dir, merge_mode):
     # 检查输入目录是否存在
@@ -17,6 +44,10 @@ def merge_images(input_dir, output_dir, merge_mode):
         raise Exception(f"No image files found in the directory {input_dir}")
 
     files.sort()  # 确保图片按照名称排序
+
+    # Start loading animation
+    loading = TermLoading()
+    loading.show_loading()
 
     # 读取所有图片文件
     images = [Image.open(f) for f in files]
@@ -44,8 +75,14 @@ def merge_images(input_dir, output_dir, merge_mode):
             x_offset += img.width
 
     # 保存合并后的图片到指定的输出目录
-    new_img.save(os.path.join(output_dir, 'merged.png'))
+    merged_image_path = os.path.join(output_dir, 'merged.png')
+    new_img.save(merged_image_path)
 
+    # Stop loading animation
+    loading.stop_loading()
+
+    print(f"Images have been successfully merged into {merged_image_path}")
+    
 if __name__ == "__main__":
     # 创建解析器
     parser = argparse.ArgumentParser(description='Merge images.')
