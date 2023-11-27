@@ -38,9 +38,9 @@ chmod +x xxx.sh // Grant execution permissions to the sh script
 
 ## Command Wrapper
 
-To more conveniently run functions directly after starting the terminal, you can create a cmd-wrapper.sh, define the script references and calling methods in it, and initialize it in .zprofile:
+To more conveniently run functions directly after starting the terminal, you can create a `cmd-wrapper.sh`, define the script references and calling methods in it, and initialize it in `.zprofile`:
 
-Create cmd-wrapper.sh and add the following content
+Create `cmd-wrapper.sh` and add the following content
 ```bash
 #!/bin/bash
 
@@ -49,7 +49,7 @@ fun cap(){
 }
 ```
 
-Append in .zprofile file (located at ~/.zprofile)
+Append in `.zprofile` file (located at ~/.zprofile)
 ```bash
 # cmd-wrapper utils
 source <path>/cmd-wrapper.sh

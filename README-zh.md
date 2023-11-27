@@ -38,9 +38,9 @@ chmod +x xxx.sh // 赋予 sh 脚本执行权限
 
 ## Command Wrapper
 
-为了更方便的在 terminal 启动后可以直接运行函数，你可以创建一个 cmd-wrapper.sh 在其中定义脚本的引用以及调用方式，并在 .zprofile 中进行初始化：
+为了更方便的在 terminal 启动后可以直接运行函数，你可以创建一个 `cmd-wrapper.sh` 在其中定义脚本的引用以及调用方式，并在 `.zprofile` 中进行初始化：
 
-创建 cmd-wrapper.sh 并添加如下内容
+创建 `cmd-wrapper.sh` 并添加如下内容
 ```bash
 #!/bin/bash
 
@@ -49,7 +49,7 @@ fun cap(){
 }
 ```
 
-在 .zprofile（位于 ~/.zprofile） 文件中追加
+在 `.zprofile`（位于 ~/.zprofile） 文件中追加
 ```bash
 # cmd-wrapper utils
 source <path>/cmd-wrapper.sh
