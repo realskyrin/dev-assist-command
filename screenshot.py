@@ -6,7 +6,7 @@ import subprocess
 from datetime import datetime
 import os
 import argparse
-from PIL import Image # pip install pillow
+from PIL import Image, UnidentifiedImageError # pip install pillow
 import io
 import time
 import tempfile
@@ -60,7 +60,11 @@ def capture_screenshot(filename_prefix=None, scale=1.0, copy_to_clipboard=False,
     loading.stop_loading()
 
     # 使用 PIL 来缩放图片
-    image = Image.open(io.BytesIO(output))
+    try:
+        image = Image.open(io.BytesIO(output))
+    except UnidentifiedImageError:
+        print("Unable to capture screenshot. The screen might be protected.")
+        return
     new_size = (int(image.width * scale), int(image.height * scale))
     resized_image = image.resize(new_size, Image.ADAPTIVE)
 
