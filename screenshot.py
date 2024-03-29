@@ -10,6 +10,7 @@ from PIL import Image, UnidentifiedImageError # pip install pillow
 import io
 import time
 import tempfile
+import re
 from threading import Thread, Event
 
 class TermLoading():
@@ -39,7 +40,14 @@ class TermLoading():
             self.__threadEvent.wait()
             self.__threadEvent.clear()
 
-def capture_screenshot(filename_prefix=None, scale=1.0, copy_to_clipboard=False, output_dir="~/Desktop"):
+def get_device_list():
+    process = subprocess.Popen("adb devices", shell=True, stdout=subprocess.PIPE)
+    output, _ = process.communicate()
+    output = output.decode('utf-8')
+    device_list = re.findall(r'(.+)\s+device', output)
+    return device_list
+
+def capture_screenshot(device, filename_prefix=None, scale=1.0, copy_to_clipboard=False, output_dir="~/Desktop"):
     # 构建文件名
     timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
     filename = f"{filename_prefix}-{timestamp}.png" if filename_prefix else f"{timestamp}.png"
@@ -48,7 +56,7 @@ def capture_screenshot(filename_prefix=None, scale=1.0, copy_to_clipboard=False,
     filepath = os.path.join(output_dir, filename)
 
     # 执行 adb 命令并捕获输出
-    process = subprocess.Popen("adb exec-out screencap -p", shell=True, stdout=subprocess.PIPE)
+    process = subprocess.Popen(f"adb -s {device} exec-out screencap -p", shell=True, stdout=subprocess.PIPE)
 
     # Start loading animation
     loading = TermLoading()
@@ -91,15 +99,21 @@ if __name__ == "__main__":
     parser.add_argument('-s', '--scale', type=float, metavar='scale_factor', help='scale of the screenshot', default=1.0)
     parser.add_argument('-c', '--copy', action='store_true', help='copy the screenshot to clipboard', default=False)
     parser.add_argument('-o', '--out', type=str, metavar='output_dir', help='the output directory of the screenshot', default="~/Desktop")
+    parser.add_argument('-d', '--device', type=int, metavar='device_index', help='the index of the device to capture', default=1)
 
     # 解析参数
     args = parser.parse_args()
 
     # 使用参数
+    device_index = args.device
     filename_prefix = args.name
     scale = args.scale
     copy_to_clipboard = args.copy
     output_dir = args.out
 
-    capture_screenshot(filename_prefix, scale, copy_to_clipboard, output_dir)
-    
+    device_list = get_device_list()
+    if device_index < len(device_list):
+        device = device_list[device_index]
+        capture_screenshot(device, filename_prefix, scale, copy_to_clipboard, output_dir)
+    else:
+        print(f"Invalid device index. There are {len(device_list)} device(s) connected.")
